@@ -1,0 +1,26 @@
+name: Public repository safety
+on:
+  push:
+  pull_request:
+jobs:
+  content-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prevent proprietary source and infrastructure from entering public history
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY_CHECK'
+          from pathlib import Path
+          import sys
+          forbidden_dirs = {'site', 'specs', 'mt5', 'tradingview', 'tools', 'tests', 'internal', 'private'}
+          forbidden_suffixes = {'.mq5', '.mqh', '.ex5', '.pine', '.py', '.js', '.ts', '.json', '.env', '.pem', '.key', '.p12', '.pfx'}
+          files = [p for p in Path('.').rglob('*') if p.is_file() and '.git' not in p.parts]
+          errors = [str(p) for p in files if any(part in forbidden_dirs for part in p.parts) or p.suffix.lower() in forbidden_suffixes]
+          if errors:
+              print('Public repository contains prohibited files:')
+              print('\n'.join(errors))
+              sys.exit(1)
+          print('Public files only: no trading source or internal infrastructure')
+          PY_CHECK

@@ -1,0 +1,24 @@
+# Never commit application source or internal code into the public hub.
+*.mq5
+*.mqh
+*.ex5
+*.pine
+*.pyc
+*.zip
+*.tar.gz
+*.env
+*.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+site/
+specs/
+tradingview/
+mt5/
+tests/
+tools/
+private/
+internal/
+__pycache__/
+.DS_Store
